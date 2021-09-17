@@ -22,6 +22,12 @@ Le format 16 bits permet d'enregistrer les donnees son sur un range de 65535 val
 l'enjeu lors de l'analyse est de le convertir dans un array normalise allant de -1 a 1.
 Pour cela on divise simplement la valeur brute par 32768.0
 
+La structuration du dossier avec les donnees est la suivante :
+- raw (les fichiers brutes)
+- merged (les fichiers concatenes)
+- log (pour les eventuels logs)
+- 
+
 """
 
 
@@ -154,79 +160,7 @@ def record_calibration_file(out_folder, parameters, duration = 10):
     wavefile.writeframes(b''.join(frames))
     wavefile.close()
     
-
-###################################################################################
-##### THE FUNCTION TO concatenate multiple files in a folder ####
-###################################################################################
-# def create_data_collection_metadata(folder) :
-#     
-#     """
-#     Things I want to save in a metadata js file
-#     - a dict with all the record wav files associated with their timestamps
-#     - a dict with all the calibration files
-#     - the total period covered by the files
-#     - ...
-#     """
-#     meta_data = {}
-#     
-#     # listing of all the wave files
-#     all_wav = folder.files("*.wav")
-#     
-#     # separating calibration files and record files
-#     record_waves = []
-#     calbiration_waves = []
-#     
-#     # designating a lower time and a higher time
-#     higher_time = datetime(year = 1920, month = 1, day = 1, hour = 1)
-#     lower_time = datetime(year = 2220, month = 1, day = 1, hour = 1)
-#     
-#     for wav in all_waves :
-#         # this is not a calibration file
-#         if "calibration" not in wav :
-#             file_name = wav.split("/")[-1]
-#             date_extent = file_name[0:-10]
-#             start_dt, end_dt = date_extent.split("__")
-#             start_dt = datetime.strptime(start_dt, TIME_FORMAT)
-#             end_dt = datetime.strptime(end_dt, TIME_FORMAT)
-#             duration = end_dt - start_dt
-#             # checking the highest and lowest datetimes
-#             if lower_time > start_dt :
-#                 lower_time = start_dt
-#             if higher_time < end_dt :
-#                 higher_time = end_dt
-#             record_waves.append({
-#                 "start" = datetime.strftime(start_dt, TIME_FORMAT),
-#                 "end" = datetime.strftime(end_dt, TIME_FORMAT),
-#                 "duration" = nice_duration(duration),
-#                 "filename" = file_name,
-#                 "location" = str(wav)
-#                 })
-#         # this is a calibration file
-#         else :
-#             file_name = wav.split(".")[0]
-#             dt = file_name.split("_")[-1]
-#             dt = datetime.strptime(dt,TIME_FORMAT)
-#             calbiration_waves.append({
-#                 "datetime" = dt,
-#                 "filename" = file_name,
-#                 "location" = str(wav)
-#                 })
-#             
-#     # building the final dict
-#     meta_data = {
-#         "location" = folder,
-#         "first_record" = datetime.strftime(lower_time, TIME_FORMAT),
-#         "last_record" = datetime.strftime(higher_time, TIME_FORMAT),
-#         "data_files" = record_waves,
-#         "calibration_files" = calbiration_waves
-#         }
-#     # writing it as json file
-#     out_file = folder.joinpath("meta_data.json")
-#     
-#         
-    
-
-
+        
 
 
 ###################################################################################
@@ -319,7 +253,7 @@ if __name__ == "__main__" :
         "rate" : 48000, # rate par defaut du sonometre
         "format": alsaaudio.PCM_FORMAT_S16_LE, # format en 16 bit pour le moment
         "channel": 1, #on enregistre juste en mono
-        "frame_size":1024, #recommande dans les tuto : 4096, recommande par Romain : 1024
+        "frame_size":4096, #recommande dans les tuto : 4096, recommande par Romain : 1024
         "duration" : 10 #petits enchantillons de 10sec
         }
     Recorder = RecordManager(parameters, tol = 5,
